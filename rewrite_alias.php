@@ -14,6 +14,27 @@ if (! defined('NV_MAINFILE')) {
 $link_true = true;
 $get_url = $_SERVER['REQUEST_URI'];
 $get_url = str_replace('.html','',$get_url);
+ if (defined('NV_IS_SPADMIN')) {
+                    $drag_block = $nv_Request->get_int('drag_block', 'session', 0);
+                    if ($nv_Request->isset_request('drag_block', 'get')) {
+                        $drag_block = $nv_Request->get_int('drag_block', 'get', 0);
+                        $nv_Request->set_Session('drag_block', $drag_block);
+
+                        $nv_redirect = nv_get_redirect('get', true);
+
+                        if (empty($nv_redirect)) {
+                            $nv_redirect = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
+                        }
+                        nv_redirect_location($nv_redirect);
+                    }
+                    if ($drag_block) {
+                        define('NV_IS_DRAG_BLOCK', true);
+                        $adm_int_lang = $nv_Request->get_string('int_lang', 'cookie');
+                        if ($adm_int_lang != NV_LANG_DATA) {
+                            $nv_Request->set_Cookie('int_lang', NV_LANG_DATA, NV_LIVE_COOKIE_TIME);
+                        }
+                    }
+                }
 if(strpos($get_url,'sitemap-')){
 	$array_url = explode('/',$get_url);
 	$sitemap  = explode('.',$array_url[1]);
@@ -124,6 +145,7 @@ if(strpos($get_url,'sitemap-')){
 
 
 //print_r($alias);
+//print_r($array_url);
 /*  */
 //print_r($alias_mod);die;
 
